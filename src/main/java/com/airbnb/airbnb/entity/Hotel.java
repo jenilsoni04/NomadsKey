@@ -21,6 +21,9 @@ public class Hotel {
     @Column(nullable = false)
     private String name;
 
+    @ManyToOne
+    private User user;
+
     private String city;
 
     @Column(columnDefinition = "TEXT[]")

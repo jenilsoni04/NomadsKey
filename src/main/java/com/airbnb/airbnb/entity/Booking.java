@@ -2,18 +2,21 @@ package com.airbnb.airbnb.entity;
 
 import com.airbnb.airbnb.entity.enums.BookingStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
+@Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,10 +49,6 @@ private LocalDate checkoutdate;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
-    private payment payment;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus bookingStatus;
@@ -61,5 +60,8 @@ private LocalDate checkoutdate;
     inverseJoinColumns=@JoinColumn(name = "guest_id")
     )
     private Set<Guest> guest;
+
+    @Column(nullable = false,precision = 10,scale = 2)
+    private BigDecimal amount;
 
 }
