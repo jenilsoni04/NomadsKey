@@ -46,6 +46,9 @@ public class Hotel {
     @Column(nullable = false)
     private Boolean active;
 
+    @ManyToOne(optional = false)
+    private User owner;
+
     @OneToMany(mappedBy = "hotel",fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Room> rooms;

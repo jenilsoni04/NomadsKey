@@ -3,13 +3,16 @@ package com.airbnb.airbnb.service;
 import com.airbnb.airbnb.dto.RoomDto;
 import com.airbnb.airbnb.entity.Hotel;
 import com.airbnb.airbnb.entity.Room;
+import com.airbnb.airbnb.entity.User;
 import com.airbnb.airbnb.exception.ResourceNotFoundException;
+import com.airbnb.airbnb.exception.UnAuthorisedException;
 import com.airbnb.airbnb.repository.HotelRepository;
 import com.airbnb.airbnb.repository.RoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +33,11 @@ public class RoomServiceimpl implements RoomService{
         log.info("Creating a new roomm"+hotelId);
         Hotel hotel=hotelRepository.findById(hotelId)
                         .orElseThrow(()->new ResourceNotFoundException("Hotel not found with ID"+hotelId));
+        User user=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!user.equals(hotel.getOwner()))
+        {
+            throw new UnAuthorisedException("This user doesn't own this hotel with id"+hotelId);
+        }
         Room room=mapper.map(roomDto,Room.class);
         room.setHotel(hotel);
         room= roomRepository.save(room);
@@ -47,7 +55,11 @@ public class RoomServiceimpl implements RoomService{
         Hotel hotel = hotelRepository
                 .findById(hotelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: "+hotelId));
-
+        User user=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!user.equals(hotel.getOwner()))
+        {
+            throw new UnAuthorisedException("This user doesn't own this hotel with id"+hotelId);
+        }
         return hotel.getRooms()
                 .stream()
                 .map((element) -> mapper.map(element, RoomDto.class))
@@ -71,7 +83,11 @@ public class RoomServiceimpl implements RoomService{
                 .findById(roomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found with ID: "+roomId));
         inventoryService.deleteallinventories(room);
-
+        User user=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!user.equals(room.getHotel().getOwner()))
+        {
+            throw new UnAuthorisedException("This user doesn't own this room with id"+roomId);
+        }
         roomRepository.deleteById(roomId);
     }
 }
