@@ -1,9 +1,8 @@
 package com.airbnb.airbnb.controller;
 
-import com.airbnb.airbnb.dto.BookingDto;
-import com.airbnb.airbnb.dto.BookingRequest;
-import com.airbnb.airbnb.dto.GuestDto;
+import com.airbnb.airbnb.dto.*;
 import com.airbnb.airbnb.service.BookingService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,29 +18,34 @@ public class HotelBookingController {
     private final BookingService bookingService;
 
     @PostMapping("/init")
+    @Operation(summary = "Initiate the booking", tags = {"Booking Flow"})
     public ResponseEntity<BookingDto> initialiseBooking(@RequestBody BookingRequest bookingRequest) {
         return ResponseEntity.ok(bookingService.initialiseBooking(bookingRequest));
     }
 
     @PostMapping("/{bookingId}/addGuests")
+    @Operation(summary = "Add guest Ids to the booking", tags = {"Booking Flow"})
     public ResponseEntity<BookingDto> addGuests(@PathVariable Long bookingId,
-                                                @RequestBody List<GuestDto> guestDtoList) {
-        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestDtoList));
+                                                @RequestBody List<Long> guestIdList) {
+        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestIdList));
     }
     @PostMapping("/{bookingId}/payments")
-    public ResponseEntity<Map<String,String>> initiatepayments(@PathVariable Long bookingId) {
+    @Operation(summary = "Initiate payments flow for the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingPaymentInitResponseDto> initiatepayments(@PathVariable Long bookingId) {
         String sessionurl=bookingService.initiatePayments(bookingId);
-        return ResponseEntity.ok(Map.of("sessionrl",sessionurl));
+        return ResponseEntity.ok(new BookingPaymentInitResponseDto(sessionurl));
     }
     @PostMapping("/{bookingId}/cancel")
+    @Operation(summary = "Cancel the booking", tags = {"Booking Flow"})
     public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId) {
         bookingService.cancelBooking(bookingId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{bookingId}/status")
-    public ResponseEntity<Map<String,String>> getBookingStatus(@PathVariable Long bookingId) {
-        return ResponseEntity.ok(Map.of("status",bookingService.getBookingStatus(bookingId)));
+    @Operation(summary = "Check the status of the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingStatusResponseDto> getBookingStatus(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(new BookingStatusResponseDto(bookingService.getBookingStatus(bookingId)));
     }
 
 }
