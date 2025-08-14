@@ -60,7 +60,8 @@ public class PricingUpdateService
         LocalDate endDate = LocalDate.now().plusYears(1);
         List<Inventory> inventoryList = inventoryRepository.findByHotelAndDateBetween(hotel, startDate, endDate);
         updateInventoryPrices(inventoryList);
-
+        endDate=LocalDate.now().plusDays(90);
+        inventoryList = inventoryRepository.findByHotelAndDateBetween(hotel, startDate, endDate);
         updateHotelMinPrice(hotel, inventoryList, startDate, endDate);
     }
 

@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/hotels")
+@RequestMapping("/hotelmanager/hotels")
 @RequiredArgsConstructor
 @Slf4j
 public class HotelController {
@@ -52,13 +52,7 @@ public class HotelController {
         hotelService.deletehotelbyid(hotelId);
         return ResponseEntity.noContent().build();
     }
-    @PatchMapping("/{hotelid}/activate")
-    @Operation(summary = "Activate a hotel", tags = {"Admin Hotel"})
-    public ResponseEntity<Void> activatehotel(@PathVariable Long hotelid)
-    {
-        hotelService.activateHotel(hotelid);
-        return ResponseEntity.noContent().build();
-    }
+
     @GetMapping
     @Operation(summary = "Get all hotels owned by admin", tags = {"Admin Hotel"})
     public ResponseEntity<List<HotelDto>> getAllHotels() {

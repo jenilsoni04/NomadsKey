@@ -102,12 +102,6 @@ public class HotelServiceimpl implements HotelService{
     public void activateHotel(Long hotelId) {
         log.info("Activating the hotel with Id : {}"+hotelId);
         Hotel hotel=hotelRepository.findById(hotelId).orElseThrow(()->new ResourceNotFoundException("Hotel not found with ID"+hotelId));
-
-        User user=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner()))
-        {
-            throw new UnAuthorisedException("This user doesn't own this hotel with id"+hotelId);
-        }
     hotel.setActive(true);
         for(Room room: hotel.getRooms()) {
             inventoryService.initializeRoomForAYear(room);

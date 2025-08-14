@@ -72,10 +72,19 @@ private final InventoryRepository inventoryRepository;
         Pageable pageable = PageRequest.of(hotelSearchRequestDto.getPage(), hotelSearchRequestDto.getSize());
         long dateCount =
                 ChronoUnit.DAYS.between(hotelSearchRequestDto.getStartDate(), hotelSearchRequestDto.getEndDate()) + 1;
+        Page<HotelPriceDto> hotelPage;
 
-        Page<HotelPriceDto> hotelPage = hotelMinPriceRepository.findHotelsWithAvailableInventory(hotelSearchRequestDto.getCity(),
-                hotelSearchRequestDto.getStartDate(), hotelSearchRequestDto.getEndDate(), hotelSearchRequestDto.getRoomsCount(),
-                dateCount, pageable);
+        if (dateCount <= 90) {
+            hotelPage = hotelMinPriceRepository.findHotelsWithAvailableInventory(hotelSearchRequestDto.getCity(),
+                    hotelSearchRequestDto.getStartDate(), hotelSearchRequestDto.getEndDate(), hotelSearchRequestDto.getRoomsCount(),
+                    dateCount, pageable);
+        }
+        else
+        {
+            hotelPage=inventoryRepository.findHotelsWithAvailableInventory(hotelSearchRequestDto.getCity(),
+                    hotelSearchRequestDto.getStartDate(), hotelSearchRequestDto.getEndDate(), hotelSearchRequestDto.getRoomsCount(),
+                    dateCount, pageable);
+        }
 
         return hotelPage;
     }

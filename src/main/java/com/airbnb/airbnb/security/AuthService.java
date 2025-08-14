@@ -6,7 +6,6 @@ import com.airbnb.airbnb.entity.User;
 import com.airbnb.airbnb.entity.enums.Role;
 import com.airbnb.airbnb.exception.ResourceNotFoundException;
 import com.airbnb.airbnb.repository.UserRepository;
-import com.airbnb.airbnb.security.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,7 +33,14 @@ public class AuthService {
         }
 
         User newUser = modelMapper.map(signUpRequestDto, User.class);
-        newUser.setRole(Set.of(Role.GUEST));
+        if (signUpRequestDto.getRole() == Role.ADMIN) {
+            throw new RuntimeException("You cannot register as ADMIN directly");
+        }
+        if (signUpRequestDto.getRole() == Role.HOTEL_MANAGER) {
+            newUser.setRole(Set.of(Role.PENDING_HOTEL_MANAGER));
+        } else {
+            newUser.setRole(Set.of(signUpRequestDto.getRole()));
+        }
         newUser.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
         newUser = userRepository.save(newUser);
 

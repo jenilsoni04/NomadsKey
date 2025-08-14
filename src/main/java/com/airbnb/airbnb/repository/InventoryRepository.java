@@ -1,5 +1,6 @@
 package com.airbnb.airbnb.repository;
 
+import com.airbnb.airbnb.dto.HotelPriceDto;
 import com.airbnb.airbnb.dto.RoomPriceDto;
 import com.airbnb.airbnb.entity.Hotel;
 import com.airbnb.airbnb.entity.Inventory;
@@ -23,16 +24,14 @@ public interface InventoryRepository extends JpaRepository<Inventory,Long> {
     void deleteByRoom(Room room);
 
     @Query("""
-            SELECT DISTINCT i.hotel
-            FROM Inventory i
-            WHERE i.city = :city
+            SELECT new com.airbnb.airbnb.dto.HotelPriceDto(i.hotel, AVG(i.price))
+            FROM HotelMinPrice i
+            WHERE i.hotel.city = :city
                 AND i.date BETWEEN :startDate AND :endDate
-                AND i.closed = false
-                AND (i.totalCount - i.bookCount - i.ReservedCount) >= :roomsCount
-           GROUP BY i.hotel, i.room
-           HAVING COUNT(i.date) = :dateCount
+                AND i.hotel.active = true
+           GROUP BY i.hotel
            """)
-    Page<Hotel> findHotelsWithAvailableInventory(
+    Page<HotelPriceDto> findHotelsWithAvailableInventory(
             @Param("city") String city,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
