@@ -1,2 +1,1 @@
-# Airbnb
-This project is a simple backend implementation of an Airbnb-like booking system, built using Spring Boot. It focuses on the core functionalities of an online accommodation platform, such as managing users, hotels, and rooms
+A robust, scalable backend for a travel platform that helps users discover, book, and manage accommodations and experiences. NomadsKey allows hosts to publish listings and guests to book stays in real-time. Built with Spring Boot and PostgreSQL, it delivers secure, efficient, and maintainable API services for the platform.
